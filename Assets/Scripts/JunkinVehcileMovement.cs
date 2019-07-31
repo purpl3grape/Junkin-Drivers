@@ -291,7 +291,7 @@ public class JunkinVehcileMovement : MonoBehaviour
 
     private void VehicleTiltSlope()
     {
-        tiltLerp_float = Mathf.Max(0.1f, (0.5f - accel_magnitude_float / 60));
+        tiltLerp_float = Mathf.Max(.1f, (0.5f - accel_magnitude_float / 60));
         vehicle_transform.up = Vector3.Lerp(vehicle_transform.up, VehicleGetSlope(vehicle_transform), tiltLerp_float);
     }
 
