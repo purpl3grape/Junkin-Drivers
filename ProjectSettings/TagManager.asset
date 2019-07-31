@@ -4,10 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - MiniMapImage
   - CarHeading
-  - DeathCamera
-  - MiniMapCamera
+  - CarMain
   layers:
   - Default
   - TransparentFX

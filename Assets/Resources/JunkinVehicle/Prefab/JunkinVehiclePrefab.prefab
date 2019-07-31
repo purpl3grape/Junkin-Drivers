@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4071689955366572}
   m_Layer: 8
-  m_Name: JunkenVehicleHeading
+  m_Name: JunkinVehicleHeading
   m_TagString: CarHeading
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24,20 +24,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052193959236816}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4678317418589082}
-  - {fileID: 4013676478755264}
   - {fileID: 4253303299460216}
   - {fileID: 4310765505581172}
-  - {fileID: 4841766516257184}
-  - {fileID: 1226144165539522910}
-  - {fileID: 3036716658092913401}
-  - {fileID: 8501409009365990271}
-  - {fileID: 761452803930390978}
-  - {fileID: 7725178297829727477}
-  - {fileID: 6474033808056073291}
   m_Father: {fileID: 4941976934902108}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,10 +42,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4941976934902108}
   - component: {fileID: 65670030148396470}
-  - component: {fileID: 54197086665151512}
   - component: {fileID: 1870334581}
+  - component: {fileID: 443800255}
   m_Layer: 8
-  m_Name: JunkenVehiclePrefab
+  m_Name: JunkinVehiclePrefab
   m_TagString: CarHeading
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,6 +63,7 @@ Transform:
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_Children:
   - {fileID: 4071689955366572}
+  - {fileID: 1099276709302646365}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -87,8 +79,64 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2, y: 1, z: 2}
-  m_Center: {x: 0, y: -0.5, z: 0}
---- !u!54 &54197086665151512
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1870334581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165680260921162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec13d8ea53454e1429ee87da9f8ae39b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCodeDebug: 0
+  vehicle_transform: {fileID: 4941976934902108}
+  vehicle_rigidbody: {fileID: 0}
+  vehicle_heading_transform: {fileID: 0}
+  vehicle_model_transform: {fileID: 0}
+  is_4wd: 1
+  axel_rr_transform: {fileID: 0}
+  axel_rl_transform: {fileID: 0}
+  axel_fr_transform: {fileID: 0}
+  axel_fl_transform: {fileID: 0}
+  width_float: 4
+  length_float: 6
+  height_float: 2
+  gravity_float: 0
+  is_grounded: 0
+  wheel_steer_float: 0
+  max_accel_modified: 0
+  max_steer_modified: 0
+  steer_magnitude_float: 0
+  accel_magnitude_float: 0
+  brake_magnitude_float: 0
+  drift_correction_float: 0
+  is_drift: 0
+  max_gravity_float: 250
+  max_steer_float: 15
+  max_accel_float: 250
+  max_brake_float: 100
+  min_drift_correction_float: 0.05
+  max_drift_correction_float: 1
+  drift_correction_multiplier: 0.05
+  drift_accel_multiplier_float: 0.05
+  drift_turn_ratio_float: 0.25
+  rayCast_layerMask:
+    serializedVersion: 2
+    m_Bits: 55
+  slope_ray_dist_float: 1000
+  tiltLerp_float: 0
+  ACCEL: 50
+  DRAG: 25
+  GRAVITY: 100
+  STEER: 20
+  STEER_DECELERATION: 10
+  DRIFT_ACCELERATION: 40
+  DRIFT_STEER_DAMPEN: 10
+--- !u!54 &443800255
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,33 +150,8 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 3
---- !u!114 &1870334581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1165680260921162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec13d8ea53454e1429ee87da9f8ae39b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vehicle_transform: {fileID: 4941976934902108}
-  vehicle_rigidbody: {fileID: 54197086665151512}
-  width_float: 4
-  length_float: 4
-  height_float: 4
-  gravity_float: 10
-  RayCastLayerMask:
-    serializedVersion: 2
-    m_Bits: 55
-  is_grounded: 0
-  steer_magnitude_float: 0
-  accel_magnitude_float: 0
-  brake_magnitude_float: 0
+  m_Constraints: 0
+  m_CollisionDetection: 2
 --- !u!1 &1190379883037866
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,7 +165,7 @@ GameObject:
   - component: {fileID: 23493446422717366}
   m_Layer: 8
   m_Name: WheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -218,7 +241,7 @@ GameObject:
   - component: {fileID: 4841766516257184}
   m_Layer: 8
   m_Name: Axel_FrontLeft
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -230,13 +253,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397453957433080}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1, y: -0.125, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4127506255072768}
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 4
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1553501011955064
 GameObject:
@@ -251,7 +274,7 @@ GameObject:
   - component: {fileID: 81484298580492884}
   m_Layer: 8
   m_Name: Camera_Main
-  m_TagString: MainCamera
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -268,7 +291,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
 --- !u!20 &20147978221968630
 Camera:
@@ -334,7 +357,7 @@ GameObject:
   - component: {fileID: 23977938187081520}
   m_Layer: 8
   m_Name: Body
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -350,8 +373,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1.5, y: 1, z: 2}
   m_Children: []
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 0
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33674702812783722
 MeshFilter:
@@ -411,7 +434,7 @@ GameObject:
   - component: {fileID: 23047938214239988}
   m_Layer: 8
   m_Name: RimWheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -489,7 +512,7 @@ GameObject:
   - component: {fileID: 65036295083953366}
   m_Layer: 8
   m_Name: Hood
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -505,8 +528,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.125, z: 0}
   m_LocalScale: {x: 1.5, y: 0.25, z: 2}
   m_Children: []
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 1
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33968841327462158
 MeshFilter:
@@ -577,7 +600,7 @@ GameObject:
   - component: {fileID: 4127506255072768}
   m_Layer: 8
   m_Name: Wheel_FrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -609,7 +632,7 @@ GameObject:
   - component: {fileID: 20624065578558834}
   m_Layer: 8
   m_Name: Camera_RearView
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -621,12 +644,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972793531743802}
-  m_LocalRotation: {x: 0, y: 0.9848078, z: -0.17364816, w: 0}
+  m_LocalRotation: {x: -0, y: 0.9848078, z: -0.17364816, w: 0}
   m_LocalPosition: {x: 0, y: 2, z: -1}
-  m_LocalScale: {x: 0.99999, y: 0.99999, z: 0.99999}
+  m_LocalScale: {x: 0.99999, y: 0.99999, z: 1}
   m_Children: []
   m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 20, y: 180, z: 0}
 --- !u!20 &20624065578558834
 Camera:
@@ -682,7 +705,7 @@ GameObject:
   - component: {fileID: 3512410651498771952}
   m_Layer: 8
   m_Name: Wheel_FrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -715,7 +738,7 @@ GameObject:
   - component: {fileID: 2678646983824720225}
   m_Layer: 8
   m_Name: RimWheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -790,7 +813,7 @@ GameObject:
   - component: {fileID: 3036716658092913401}
   m_Layer: 8
   m_Name: Axel_RearLeft
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -803,12 +826,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2232174014556229524}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: -1}
+  m_LocalPosition: {x: -1, y: -0.125, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1149244778714640244}
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 6
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2386001422215591280
 GameObject:
@@ -821,7 +844,7 @@ GameObject:
   - component: {fileID: 1226144165539522910}
   m_Layer: 8
   m_Name: Axel_FrontRight
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -834,12 +857,51 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2386001422215591280}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 1}
+  m_LocalPosition: {x: 1, y: -0.125, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3512410651498771952}
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 5
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2962078025045710780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1099276709302646365}
+  m_Layer: 0
+  m_Name: JunkinVehicleModel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1099276709302646365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2962078025045710780}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8501409009365990271}
+  - {fileID: 3036716658092913401}
+  - {fileID: 1226144165539522910}
+  - {fileID: 4841766516257184}
+  - {fileID: 4678317418589082}
+  - {fileID: 4013676478755264}
+  - {fileID: 761452803930390978}
+  - {fileID: 7725178297829727477}
+  - {fileID: 6474033808056073291}
+  m_Father: {fileID: 4941976934902108}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3368074419910503000
 GameObject:
@@ -853,7 +915,7 @@ GameObject:
   - component: {fileID: 3705522477442178960}
   m_Layer: 8
   m_Name: Light_Front
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -869,8 +931,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 1.5}
   m_LocalScale: {x: 6, y: 6, z: 6}
   m_Children: []
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 8
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!108 &3705522477442178960
 Light:
@@ -928,7 +990,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 4e-45, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -946,7 +1008,7 @@ GameObject:
   - component: {fileID: 5445221056423864825}
   m_Layer: 8
   m_Name: Bumper_Front
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -962,8 +1024,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 1.25}
   m_LocalScale: {x: 1.5, y: 0.5, z: 0.5}
   m_Children: []
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 10
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &803952548725253493
 MeshFilter:
@@ -1036,7 +1098,7 @@ GameObject:
   - component: {fileID: 9216167668886602914}
   m_Layer: 8
   m_Name: WheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1114,7 +1176,7 @@ GameObject:
   - component: {fileID: 6481925424401342292}
   m_Layer: 8
   m_Name: WheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1192,7 +1254,7 @@ GameObject:
   - component: {fileID: 7978505374351289997}
   m_Layer: 8
   m_Name: RimWheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1267,7 +1329,7 @@ GameObject:
   - component: {fileID: 1149244778714640244}
   m_Layer: 8
   m_Name: Wheel_FrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1301,7 +1363,7 @@ GameObject:
   - component: {fileID: 8865387996385841483}
   m_Layer: 8
   m_Name: Bumper_Rear
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1313,12 +1375,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7443447636367398821}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: -1.25}
   m_LocalScale: {x: 1.5, y: 0.5, z: 0.5}
   m_Children: []
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 9
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7528801020160214390
 MeshFilter:
@@ -1391,7 +1453,7 @@ GameObject:
   - component: {fileID: 6591154940457581299}
   m_Layer: 8
   m_Name: WheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1469,7 +1531,7 @@ GameObject:
   - component: {fileID: 7936924600877943815}
   m_Layer: 8
   m_Name: RimWheelFrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1544,7 +1606,7 @@ GameObject:
   - component: {fileID: 2519670826067076902}
   m_Layer: 8
   m_Name: Wheel_FrontLeft
-  m_TagString: Untagged
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1575,7 +1637,7 @@ GameObject:
   - component: {fileID: 8501409009365990271}
   m_Layer: 8
   m_Name: Axel_RearRight
-  m_TagString: CarHeading
+  m_TagString: CarMain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1588,10 +1650,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8714769133795455271}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: -1}
+  m_LocalPosition: {x: 1, y: -0.125, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2519670826067076902}
-  m_Father: {fileID: 4071689955366572}
-  m_RootOrder: 7
+  m_Father: {fileID: 1099276709302646365}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
