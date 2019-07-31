@@ -34,8 +34,12 @@ public class JunkinVehcileMovement : MonoBehaviour
     public float accel_magnitude_float = 0;
     public float brake_magnitude_float = 0;
     public float drift_correction_float = 0;
+    public float nitros_meter_float = 0;
+    public float nitros_speed_float = 0;
 
     public bool is_drift;
+    public bool is_nitrosboost;
+
     [Header("Maximum and Minimum Vehicle Movement Values")]
     [Range(0, 500)] public float max_gravity_float = 250f;
     [Range(0, 50)] public float max_steer_float = 15f;
@@ -49,6 +53,9 @@ public class JunkinVehcileMovement : MonoBehaviour
     [Range(0, 0.1f)] public float drift_accel_multiplier_float = 0.05f;
     [Tooltip("Turn Angle multiplier when drifting")]
     [Range(0, 1f)] public float drift_turn_ratio_float = 0.25f;
+    [Range(0, 100f)] public float max_nitros_meter_float = 100f;
+    [Range(0, 100f)] public float max_nitros_speed_float = 100f;
+    [Range(0, 20f)] public float nitros_depletion_rate = 2.5f;
 
     [Header("Layers Used for Ground Check")]
     [Tooltip("Make sure your vehicle layers are not included as it will trick the vehicle into being grounded when it is not")]
@@ -154,6 +161,9 @@ public class JunkinVehcileMovement : MonoBehaviour
         //Slope Tilt
         VehicleTiltSlope();
 
+        VehicleNitrosBoostInput();
+
+
         vehicle_rigidbody.velocity = Vector3.zero;
 
         if (is_grounded)
@@ -218,13 +228,13 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
 
             //Calculation of Max speed is a function of: max_accel_modified - Steering Deceleration + Drifting Acceleration
-            if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION)
+            if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
             {
                 max_accel_modified += drift_accel_multiplier_float;
             }
             else
             {
-                max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float * DRIFT_ACCELERATION);
+                max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
             }
 
             //Rotate: Note there should be INCREMENTAL deviation between the Heading rotation V.S. Model rotation
@@ -310,17 +320,58 @@ public class JunkinVehcileMovement : MonoBehaviour
 
     #region Inputs
 
-    private void VehicleAccelInput()
+    private void VehicleNitrosBoostInput()
     {
-        if (!is_drift)
-            max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION;
-
-        if (Input.GetKey(KeyCode.W))
+        if (nitros_meter_float <= 0)
         {
-            accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += ACCEL * Time.fixedDeltaTime : max_accel_modified;
+            is_nitrosboost = false;
+            nitros_speed_float = 0;
+            nitros_meter_float = 0;
+            return;
+        }
+
+        if (Input.GetKey(KeyCode.RightControl))
+        {
+            if (!is_nitrosboost)
+            {
+                is_nitrosboost = true;
+                nitros_speed_float = max_nitros_speed_float;
+
+                if (accel_magnitude_float + max_nitros_speed_float < max_accel_modified + max_nitros_speed_float)
+                {
+                    accel_magnitude_float += max_nitros_speed_float;
+                }
+                else
+                {
+                    accel_magnitude_float = max_accel_float + max_nitros_speed_float;
+                }
+            }
+
+            nitros_meter_float = nitros_meter_float > 0 ? nitros_meter_float -= Time.fixedDeltaTime * nitros_depletion_rate : 0;
+
         }
         else
         {
+            is_nitrosboost = false;
+            nitros_speed_float = 0;
+        }
+    }
+
+    private void VehicleAccelInput()
+    {
+        if (!is_drift)
+        {
+            max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
+        }
+
+
+        if (Input.GetKey(KeyCode.W))
+        {
+
+            accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += ACCEL * Time.fixedDeltaTime : max_accel_modified;
+        }
+        else
+        {    
             accel_magnitude_float = accel_magnitude_float > 0 ? accel_magnitude_float -= DRAG * Time.fixedDeltaTime : 0;
         }
     }
