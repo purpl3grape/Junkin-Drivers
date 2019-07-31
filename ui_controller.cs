@@ -8,6 +8,7 @@ public class ui_controller : MonoBehaviour
     int item_selected;
     int player_tires = 4;
     int player_doors = 2;
+    bool has_door = true;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +20,8 @@ public class ui_controller : MonoBehaviour
 
         ui_item[0] = gameObject.transform.GetChild(0).gameObject;
         ui_item[1] = gameObject.transform.GetChild(1).gameObject;
+        ui_item[2] = gameObject.transform.GetChild(2).gameObject;
+
 
         if (ui_item[1] == null)
             throw new System.Exception();
@@ -37,7 +40,7 @@ public class ui_controller : MonoBehaviour
             
 
             item_selected += 1;
-            if (item_selected >= 2)
+            if (item_selected >= 3)
                 item_selected = 0;
 
             ui_item[item_selected].transform.localScale += new Vector3(0.2f, 0.2f);
@@ -77,6 +80,20 @@ public class ui_controller : MonoBehaviour
                     //play sound? or other notification
                 }
 
+            }
+            else if(ui_item[item_selected].gameObject.tag == "hood")
+            {
+                if (has_door)
+                {
+                    Debug.Log("used hood");
+                    has_door = false;
+                    //call hood item function use here
+                }
+                else if (!has_door)
+                {
+                    Debug.Log("No hood left fool");
+                    //play sound? or other notification
+                }
             }
         }
 
