@@ -104,6 +104,18 @@ public class JunkinVehcileMovement : MonoBehaviour
         VehicleMovement();
     }
 
+    #region public methods to get and set variables on this script
+    public float GetNitrosMeter()
+    {
+        return nitros_meter_float;
+    }
+    public void SetNitrosMeter(float value)
+    {
+        nitros_meter_float = value;
+    }
+    #endregion
+
+
     #region GroundCheck Methods
     private void VehicleGroundCheck()
     {
