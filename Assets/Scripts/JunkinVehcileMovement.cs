@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 
 public class JunkinVehcileMovement : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class JunkinVehcileMovement : MonoBehaviour
     [HideInInspector] public Rigidbody vehicle_rigidbody;
     [HideInInspector] public Transform vehicle_heading_transform;
     [HideInInspector] public Transform vehicle_model_transform;
+    [HideInInspector] public PostProcessingBehaviour vehicle_camera_postprocess_behavior;
+    [HideInInspector] public PostProcessingProfile vehicle_camera_profile;
     public bool is_4wd = false;
 
     [HideInInspector] public Transform axel_rr_transform;
@@ -94,6 +97,9 @@ public class JunkinVehcileMovement : MonoBehaviour
         axel_rl_transform = vehicle_model_transform.GetChild(1);
         axel_fr_transform = vehicle_model_transform.GetChild(2);
         axel_fl_transform = vehicle_model_transform.GetChild(3);
+        vehicle_camera_postprocess_behavior = vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>();
+
+        //vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
         groundCheck_hits = new RaycastHit[255];
         ground_check_ray = new Ray[255];
     }
@@ -173,6 +179,7 @@ public class JunkinVehcileMovement : MonoBehaviour
         //Slope Tilt
         VehicleTiltSlope();
 
+        //Nitros Boost
         VehicleNitrosBoostInput();
 
 
@@ -240,13 +247,27 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
 
             //Calculation of Max speed is a function of: max_accel_modified - Steering Deceleration + Drifting Acceleration
-            if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+            if (is_nitrosboost)
             {
-                max_accel_modified += drift_accel_multiplier_float;
+                if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                {
+                    max_accel_modified += drift_accel_multiplier_float;
+                }
+                else
+                {
+                    max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                }
             }
             else
             {
-                max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                if(max_accel_modified > max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                {
+                    max_accel_modified -= DRAG * Time.fixedDeltaTime;
+                    if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                    }
+                }
             }
 
             //Rotate: Note there should be INCREMENTAL deviation between the Heading rotation V.S. Model rotation
@@ -259,7 +280,9 @@ public class JunkinVehcileMovement : MonoBehaviour
         else
         {
             if (is_drift)
+            {
                 drift_correction_float = 0;
+            }
 
             is_drift = false;
 
@@ -348,15 +371,7 @@ public class JunkinVehcileMovement : MonoBehaviour
             {
                 is_nitrosboost = true;
                 nitros_speed_float = max_nitros_speed_float;
-
-                if (accel_magnitude_float + max_nitros_speed_float < max_accel_modified + max_nitros_speed_float)
-                {
-                    accel_magnitude_float += max_nitros_speed_float;
-                }
-                else
-                {
-                    accel_magnitude_float = max_accel_float + max_nitros_speed_float;
-                }
+                vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
             }
 
             nitros_meter_float = nitros_meter_float > 0 ? nitros_meter_float -= Time.fixedDeltaTime * nitros_depletion_rate : 0;
@@ -364,6 +379,10 @@ public class JunkinVehcileMovement : MonoBehaviour
         }
         else
         {
+            if (is_nitrosboost)
+            {
+                vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = false;
+            }
             is_nitrosboost = false;
             nitros_speed_float = 0;
         }
@@ -373,18 +392,48 @@ public class JunkinVehcileMovement : MonoBehaviour
     {
         if (!is_drift)
         {
-            max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
+            if (is_nitrosboost)
+            {
+                max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
+            }
+            else
+            {
+                if(max_accel_modified > max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
+                {
+                    max_accel_modified -= DRAG * Time.fixedDeltaTime;
+                    if(max_accel_modified< max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
+                    }
+                }
+                else
+                {
+                    max_accel_modified = max_accel_float;
+                }
+            }
         }
-
 
         if (Input.GetKey(KeyCode.W))
-        {
-
-            accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += ACCEL * Time.fixedDeltaTime : max_accel_modified;
+        {        
+            accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += (ACCEL + nitros_speed_float) * Time.fixedDeltaTime : max_accel_modified;
         }
         else
-        {    
-            accel_magnitude_float = accel_magnitude_float > 0 ? accel_magnitude_float -= DRAG * Time.fixedDeltaTime : 0;
+        {
+            if (is_nitrosboost)
+            {
+                if (accel_magnitude_float > max_nitros_speed_float)
+                {
+                    accel_magnitude_float = accel_magnitude_float - DRAG * Time.fixedDeltaTime > max_nitros_speed_float ? accel_magnitude_float -= DRAG * Time.fixedDeltaTime : max_nitros_speed_float;
+                }
+                else
+                {
+                    accel_magnitude_float = accel_magnitude_float + nitros_speed_float * Time.fixedDeltaTime < max_nitros_speed_float ? accel_magnitude_float += nitros_speed_float * Time.fixedDeltaTime : nitros_speed_float;
+                }
+            }
+            else
+            {
+                accel_magnitude_float = accel_magnitude_float > 0 ? accel_magnitude_float -= DRAG * Time.fixedDeltaTime : 0;
+            }
         }
     }
 
