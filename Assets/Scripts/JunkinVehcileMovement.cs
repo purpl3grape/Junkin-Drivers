@@ -5,25 +5,35 @@ using UnityEngine.PostProcessing;
 
 public class JunkinVehcileMovement : MonoBehaviour
 {
+    [Header("Debug")]
     [SerializeField] private bool isCodeDebug = false;
     #region Public Variables
     [HideInInspector] public Transform vehicle_transform;
     [HideInInspector] public Rigidbody vehicle_rigidbody;
     [HideInInspector] public Transform vehicle_heading_transform;
     [HideInInspector] public Transform vehicle_model_transform;
+    [HideInInspector] public Transform vehicle_camera_transform;
     [HideInInspector] public PostProcessingBehaviour vehicle_camera_postprocess_behavior;
     [HideInInspector] public PostProcessingProfile vehicle_camera_profile;
-    public bool is_4wd = false;
 
     [HideInInspector] public Transform axel_rr_transform;
     [HideInInspector] public Transform axel_rl_transform;
     [HideInInspector] public Transform axel_fr_transform;
     [HideInInspector] public Transform axel_fl_transform;
 
+    [Header("Cinematics")]
+    public bool is_Cinematic_View;
+    [Range(60,110)] public float min_fov_float = 90;
+    [Range(110, 160)] public float max_fov_float = 130;
+    [Range(5, 50)] public float pan_away_float = 10;
+    [Range(5, 50)] public float pan_toward_float = 30;
+    public bool is_MotionBlur;
+
     [Header("Vehicle Physical Attributes")]
     public float width_float = 4f;
     public float length_float = 6f;
     public float height_float = 2f;
+    public bool is_4wd = false;
 
     [Header("[Run-Time] Vehicle Movement Variables")]
     public float gravity_float = 0;
@@ -97,6 +107,7 @@ public class JunkinVehcileMovement : MonoBehaviour
         axel_rl_transform = vehicle_model_transform.GetChild(1);
         axel_fr_transform = vehicle_model_transform.GetChild(2);
         axel_fl_transform = vehicle_model_transform.GetChild(3);
+        vehicle_camera_transform = vehicle_heading_transform.GetChild(0);
         vehicle_camera_postprocess_behavior = vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>();
 
         //vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
@@ -184,6 +195,7 @@ public class JunkinVehcileMovement : MonoBehaviour
 
 
         vehicle_rigidbody.velocity = Vector3.zero;
+
 
         if (is_grounded)
         {
@@ -342,6 +354,7 @@ public class JunkinVehcileMovement : MonoBehaviour
 
     #endregion
 
+    #region wheels
     private void RotateWheels()
     {
         axel_fr_transform.localRotation = Quaternion.Euler(0, wheel_steer_float, 0);
@@ -352,11 +365,14 @@ public class JunkinVehcileMovement : MonoBehaviour
             axel_rl_transform.localRotation = Quaternion.Euler(0, -wheel_steer_float, 0);
         }
     }
+    #endregion
 
     #region Inputs
 
     private void VehicleNitrosBoostInput()
     {
+        //CameraFOVBehavior();
+
         if (nitros_meter_float <= 0)
         {
             is_nitrosboost = false;
@@ -371,7 +387,15 @@ public class JunkinVehcileMovement : MonoBehaviour
             {
                 is_nitrosboost = true;
                 nitros_speed_float = max_nitros_speed_float;
-                vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
+                if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
+            }
+
+            if (is_Cinematic_View)
+            {
+                if (vehicle_camera_transform.GetComponent<Camera>().fieldOfView < max_fov_float)
+                {
+                    vehicle_camera_transform.GetComponent<Camera>().fieldOfView += Time.fixedDeltaTime * pan_away_float;
+                }
             }
 
             nitros_meter_float = nitros_meter_float > 0 ? nitros_meter_float -= Time.fixedDeltaTime * nitros_depletion_rate : 0;
@@ -381,8 +405,18 @@ public class JunkinVehcileMovement : MonoBehaviour
         {
             if (is_nitrosboost)
             {
-                vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = false;
+                if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = false;
             }
+
+            if (is_Cinematic_View)
+            {
+                if (vehicle_camera_transform.GetComponent<Camera>().fieldOfView > min_fov_float)
+                {
+                    vehicle_camera_transform.GetComponent<Camera>().fieldOfView -= Time.fixedDeltaTime * pan_toward_float;
+                }
+            }
+
+
             is_nitrosboost = false;
             nitros_speed_float = 0;
         }

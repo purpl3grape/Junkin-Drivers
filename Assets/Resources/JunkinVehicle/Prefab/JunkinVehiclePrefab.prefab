@@ -98,16 +98,19 @@ MonoBehaviour:
   vehicle_rigidbody: {fileID: 0}
   vehicle_heading_transform: {fileID: 0}
   vehicle_model_transform: {fileID: 0}
+  vehicle_camera_transform: {fileID: 0}
   vehicle_camera_postprocess_behavior: {fileID: 0}
   vehicle_camera_profile: {fileID: 0}
-  is_4wd: 1
   axel_rr_transform: {fileID: 0}
   axel_rl_transform: {fileID: 0}
   axel_fr_transform: {fileID: 0}
   axel_fl_transform: {fileID: 0}
+  is_Cinematic_View: 1
+  is_MotionBlur: 1
   width_float: 4
   length_float: 6
   height_float: 2
+  is_4wd: 1
   gravity_float: 0
   is_grounded: 0
   wheel_steer_float: 0
@@ -160,7 +163,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 3
 --- !u!1 &1190379883037866
 GameObject:
   m_ObjectHideFlags: 0
