@@ -3,23 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
+public enum InputType
+{
+    KeyboardAndMouse,
+    Xbox,
+}
+
 public class JunkinVehcileMovement : MonoBehaviour
 {
     [Header("Debug")]
-    [SerializeField] private bool isCodeDebug = false;
+    [SerializeField] public bool isCodeDebug = false;
+    public bool isEditorGUI = false;
+    public bool keepTabsOpen;
+    public bool showRunTimeVariablesOnly;
     #region Public Variables
-    [HideInInspector] public Transform vehicle_transform;
-    [HideInInspector] public Rigidbody vehicle_rigidbody;
-    [HideInInspector] public Transform vehicle_heading_transform;
-    [HideInInspector] public Transform vehicle_model_transform;
-    [HideInInspector] public Transform vehicle_camera_transform;
-    [HideInInspector] public PostProcessingBehaviour vehicle_camera_postprocess_behavior;
-    [HideInInspector] public PostProcessingProfile vehicle_camera_profile;
+    [Header("Vehicle Components")]
+    public Transform vehicle_transform;
+    public Rigidbody vehicle_rigidbody;
+    public Transform vehicle_heading_transform;
+    public Transform vehicle_model_transform;
+    public Transform vehicle_camera_transform;
+    public PostProcessingBehaviour vehicle_camera_postprocess_behavior;
+    public PostProcessingProfile vehicle_camera_profile;
 
-    [HideInInspector] public Transform axel_rr_transform;
-    [HideInInspector] public Transform axel_rl_transform;
-    [HideInInspector] public Transform axel_fr_transform;
-    [HideInInspector] public Transform axel_fl_transform;
+    public Transform axel_rr_transform;
+    public Transform axel_rl_transform;
+    public Transform axel_fr_transform;
+    public Transform axel_fl_transform;
+
+    [Header("Vehicle Physical Attributes")]
+    public float width_float = 4f;
+    public float length_float = 6f;
+    public float height_float = 2f;
+    public bool is_4wd = false;
 
     [Header("Cinematics")]
     public bool is_Cinematic_View;
@@ -29,26 +45,26 @@ public class JunkinVehcileMovement : MonoBehaviour
     [Range(5, 50)] public float pan_toward_float = 30;
     public bool is_MotionBlur;
 
-    [Header("Vehicle Physical Attributes")]
-    public float width_float = 4f;
-    public float length_float = 6f;
-    public float height_float = 2f;
-    public bool is_4wd = false;
+
+    
 
     [Header("[Run-Time] Vehicle Movement Variables")]
-    public float gravity_float = 0;
     public bool is_grounded;
-    [SerializeField] private Ray[] ground_check_ray = new Ray[5];
-    [SerializeField] private RaycastHit[] groundCheck_hits = new RaycastHit[255];
-    [SerializeField] private float wheel_steer_float;
-    [SerializeField] private float max_accel_modified;
-    [SerializeField] private float max_steer_modified;
-    public float steer_magnitude_float = 0;
+    [SerializeField] public Ray[] ground_check_ray = new Ray[5];
+    [SerializeField] public RaycastHit[] groundCheck_hits = new RaycastHit[255];
+    public float gravity_float = 0;
+    [SerializeField] public float max_accel_modified;
+    [SerializeField] public float wheel_steer_float;
+    [SerializeField] public float max_steer_modified;
     public float accel_magnitude_float = 0;
+    public float steer_magnitude_float = 0;
     public float brake_magnitude_float = 0;
     public float drift_correction_float = 0;
     public float nitros_meter_float = 0;
     public float nitros_speed_float = 0;
+
+    [Tooltip("How responsive the slope tilt adjustment is. This is a function of vehicle speed modified in runtime")]
+    [SerializeField] public float tiltLerp_float;
 
     public bool is_drift;
     public bool is_nitrosboost;
@@ -72,28 +88,31 @@ public class JunkinVehcileMovement : MonoBehaviour
 
     [Header("Layers Used for Ground Check")]
     [Tooltip("Make sure your vehicle layers are not included as it will trick the vehicle into being grounded when it is not")]
-    [SerializeField] private LayerMask rayCast_layerMask = ~(1 << 1 | 1 << 2 | 1 << 8);
+    [SerializeField] public LayerMask rayCast_layerMask = ~(1 << 1 | 1 << 2 | 1 << 8);
     [Tooltip("This is for how far off the ground do we detect and adjust the angle of the car based on terrain slopes")]
-    public float slope_ray_dist_float;
-    [Tooltip("How responsive the slope tilt adjustment is. This is a function of vehicle speed modified in runtime")]
-    [SerializeField] private float tiltLerp_float;
+    [Range(10, 10000f)] public float slope_ray_dist_float;
     #endregion
 
     #region 'Fixed' values, but serialized to allow tweaking of variables
     [Header("Input Responsiveness")]
     [Tooltip("Higher ACCEL Values are more responsive")]
-    [Range(0,100)] [SerializeField] private float ACCEL = 50f;
+    [Range(0,100)] [SerializeField] public float ACCEL = 50f;
     [Tooltip("Higher DRAG Values are more responsive")]
-    [Range(0, 100)] [SerializeField] private float DRAG = 25f;
+    [Range(0, 100)] [SerializeField] public float DRAG = 25f;
     [Tooltip("Higher GRAVITY Values are more responsive")]
-    [Range(1, 100)] [SerializeField] private float GRAVITY = 100f;
+    [Range(1, 100)] [SerializeField] public float GRAVITY = 100f;
     [Tooltip("Higher STEER Values are more responsive")]
-    [Range(1, 30)] [SerializeField] private float STEER = 15f;
+    [Range(1, 30)] [SerializeField] public float STEER = 15f;
     [Tooltip("Higher STEER_DECELERATION Values decrease max turning speed")]
-    [Range(1, 50)] [SerializeField] private float STEER_DECELERATION = 10f;
+    [Range(1, 50)] [SerializeField] public float STEER_DECELERATION = 10f;
     [Tooltip("Higher DRIFT_ACCELERATION Values increase max drifting speed")]
-    [Range(1, 50)] [SerializeField] private float DRIFT_ACCELERATION = 40f;
-    [Range(1, 50)] [SerializeField] private float DRIFT_STEER_DAMPEN = 10f;
+    [Range(1, 50)] [SerializeField] public float DRIFT_ACCELERATION = 40f;
+    [Range(1, 50)] [SerializeField] public float DRIFT_STEER_DAMPEN = 10f;
+    #endregion
+
+    #region InputSelection
+    [Header("InputType")]
+    public InputType input_type_enum = InputType.KeyboardAndMouse;
     #endregion
 
     private void Start()
@@ -109,8 +128,7 @@ public class JunkinVehcileMovement : MonoBehaviour
         axel_fl_transform = vehicle_model_transform.GetChild(3);
         vehicle_camera_transform = vehicle_heading_transform.GetChild(0);
         vehicle_camera_postprocess_behavior = vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>();
-
-        //vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
+        vehicle_camera_profile = vehicle_camera_postprocess_behavior.profile;
         groundCheck_hits = new RaycastHit[255];
         ground_check_ray = new Ray[255];
     }
@@ -227,7 +245,7 @@ public class JunkinVehcileMovement : MonoBehaviour
         vehicle_model_transform.rotation *= Quaternion.Euler(0, steer_magnitude_float * STEER * Time.fixedDeltaTime * drift_correction_float, 0);
 
         //Initiate Drift Mode
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) || Input.GetAxis("RightTrigger") > 0)
         {
 
             if (!is_drift)
@@ -381,7 +399,7 @@ public class JunkinVehcileMovement : MonoBehaviour
             return;
         }
 
-        if (Input.GetKey(KeyCode.RightControl))
+        if (Input.GetKey(KeyCode.RightControl) || Input.GetAxis("LeftTrigger") > 0)
         {
             if (!is_nitrosboost)
             {
@@ -447,7 +465,7 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) || Input.GetButton("A"))
         {        
             accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += (ACCEL + nitros_speed_float) * Time.fixedDeltaTime : max_accel_modified;
         }
@@ -476,12 +494,12 @@ public class JunkinVehcileMovement : MonoBehaviour
         if (!is_drift)
             max_steer_modified = max_steer_float;
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) || Input.GetAxis("LeftJoyStickX") < 0)
         {
             wheel_steer_float = wheel_steer_float > -max_steer_float ? wheel_steer_float -= STEER * Time.fixedDeltaTime : -max_steer_float;
             steer_magnitude_float = steer_magnitude_float > -max_steer_modified ? steer_magnitude_float -= STEER * Time.fixedDeltaTime : -max_steer_modified;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D) || Input.GetAxis("LeftJoyStickX") > 0)
         {
             wheel_steer_float = wheel_steer_float < max_steer_float ? wheel_steer_float += STEER * Time.fixedDeltaTime : max_steer_float;
             steer_magnitude_float = steer_magnitude_float < max_steer_modified ? steer_magnitude_float += STEER * Time.fixedDeltaTime : max_steer_modified;
@@ -537,6 +555,66 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
 
         }
+    }
+    #endregion
+
+    #region Applying Default Preset Values for custom vehicles
+    [ContextMenu("Default Junkin-Drivers Vehicle")]
+    public void DefaultJunkinDriverPreset()
+    {
+        width_float = 4f;
+        length_float = 6f;
+        height_float = 2f;
+        is_4wd = false;
+
+
+        is_grounded = true;
+        gravity_float = 0;
+        max_accel_modified = 0;
+        wheel_steer_float = 0;
+        max_steer_modified = 0;
+        accel_magnitude_float = 0;
+        steer_magnitude_float = 0;
+        brake_magnitude_float = 0;
+        drift_correction_float = 0;
+        nitros_meter_float = 99999;
+        nitros_speed_float = 0;
+
+
+        is_Cinematic_View = true;
+        min_fov_float = 90;
+        max_fov_float = 130;
+        pan_away_float = 10;
+        pan_toward_float = 30;
+        is_MotionBlur = true;
+
+        nitros_meter_float = 99999;
+
+        max_gravity_float = 250f;
+        max_steer_float = 15f;
+        max_accel_float = 250f;
+        max_brake_float = 100f;
+        min_drift_correction_float = 0.05f;
+        max_drift_correction_float = 1f;
+        drift_correction_multiplier = 0.05f;
+        drift_accel_multiplier_float = 0.05f;
+        drift_turn_ratio_float = 0.25f;
+        max_nitros_meter_float = 100f;
+        max_nitros_speed_float = 100f;
+        nitros_depletion_rate = 2.5f;
+
+        rayCast_layerMask = ~(1 << 1 | 1 << 2 | 1 << 8);
+        slope_ray_dist_float = 1000;
+
+        ACCEL = 50f;
+        DRAG = 25f;
+        GRAVITY = 100f;
+        STEER = 15f;
+        STEER_DECELERATION = 10f;
+        DRIFT_ACCELERATION = 40f;
+        DRIFT_STEER_DAMPEN = 10f;
+
+        Start();
     }
     #endregion
 
