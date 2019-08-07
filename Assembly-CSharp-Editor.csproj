@@ -95,7 +95,7 @@
     <Compile Include="Assets\PostProcessing\Editor\Utils\EditorResources.cs" />
     <Compile Include="Assets\PostProcessing\Editor\Utils\FxStyles.cs" />
     <Compile Include="Assets\PostProcessing\Editor\Utils\ReflectionUtils.cs" />
-    <Compile Include="Assets\Scripts\Editor\JunkinVehcileMovementEditor.cs" />
+    <Compile Include="Assets\Scripts\Editor\CustomInspectorBehavior.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/peter/Documents/Purpl3grapeLaptop/GitHub/Unity/Forked-Junkin-Drivers/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

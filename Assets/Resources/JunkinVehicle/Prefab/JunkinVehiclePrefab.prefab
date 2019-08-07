@@ -59,7 +59,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1165680260921162}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_Children:
   - {fileID: 4071689955366572}
@@ -112,7 +112,7 @@ MonoBehaviour:
   width_float: 4
   length_float: 6
   height_float: 2
-  is_4wd: 0
+  is_4wd: 1
   is_Cinematic_View: 1
   min_fov_float: 90
   max_fov_float: 130
@@ -151,7 +151,8 @@ MonoBehaviour:
   slope_ray_dist_float: 1000
   ACCEL: 50
   DRAG: 25
-  GRAVITY: 100
+  ROTATIONAL_DRAG: 25
+  GRAVITY: 1000
   STEER: 15
   STEER_DECELERATION: 10
   DRIFT_ACCELERATION: 40

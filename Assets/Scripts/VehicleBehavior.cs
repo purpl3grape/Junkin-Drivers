@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-public enum InputType
-{
-    KeyboardAndMouse,
-    Xbox,
-}
 
-public class JunkinVehcileMovement : MonoBehaviour
+    public enum InputType
+    {
+        KeyboardAndMouse,
+        Xbox,
+    }
+
+[RequireComponent(typeof(Rigidbody))]
+public class VehicleBehavior : MonoBehaviour
 {
     [Header("Debug")]
     [SerializeField] public bool isCodeDebug = false;
@@ -25,6 +27,7 @@ public class JunkinVehcileMovement : MonoBehaviour
     public Transform vehicle_camera_transform;
     public PostProcessingBehaviour vehicle_camera_postprocess_behavior;
     public PostProcessingProfile vehicle_camera_profile;
+    private bool isPostProfile;
 
     public Transform axel_rr_transform;
     public Transform axel_rl_transform;
@@ -39,14 +42,14 @@ public class JunkinVehcileMovement : MonoBehaviour
 
     [Header("Cinematics")]
     public bool is_Cinematic_View;
-    [Range(60,110)] public float min_fov_float = 90;
+    [Range(60, 110)] public float min_fov_float = 90;
     [Range(110, 160)] public float max_fov_float = 130;
     [Range(5, 50)] public float pan_away_float = 10;
     [Range(5, 50)] public float pan_toward_float = 30;
     public bool is_MotionBlur;
 
 
-    
+
 
     [Header("[Run-Time] Vehicle Movement Variables")]
     public bool is_grounded;
@@ -96,11 +99,13 @@ public class JunkinVehcileMovement : MonoBehaviour
     #region 'Fixed' values, but serialized to allow tweaking of variables
     [Header("Input Responsiveness")]
     [Tooltip("Higher ACCEL Values are more responsive")]
-    [Range(0,100)] [SerializeField] public float ACCEL = 50f;
+    [Range(0, 100)] [SerializeField] public float ACCEL = 50f;
     [Tooltip("Higher DRAG Values are more responsive")]
     [Range(0, 100)] [SerializeField] public float DRAG = 25f;
+    [Tooltip("Higher DRAG Values are more responsive")]
+    [Range(0, 100)] [SerializeField] public float ROTATIONAL_DRAG = 25f;
     [Tooltip("Higher GRAVITY Values are more responsive")]
-    [Range(1, 100)] [SerializeField] public float GRAVITY = 100f;
+    [Range(1, 2000)] [SerializeField] public float GRAVITY = 1000f;
     [Tooltip("Higher STEER Values are more responsive")]
     [Range(1, 30)] [SerializeField] public float STEER = 15f;
     [Tooltip("Higher STEER_DECELERATION Values decrease max turning speed")]
@@ -127,10 +132,15 @@ public class JunkinVehcileMovement : MonoBehaviour
         axel_fr_transform = vehicle_model_transform.GetChild(2);
         axel_fl_transform = vehicle_model_transform.GetChild(3);
         vehicle_camera_transform = vehicle_heading_transform.GetChild(0);
-        vehicle_camera_postprocess_behavior = vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>();
-        vehicle_camera_profile = vehicle_camera_postprocess_behavior.profile;
+        if (vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>() != null)
+        {
+            vehicle_camera_postprocess_behavior = vehicle_heading_transform.GetChild(0).GetComponent<PostProcessingBehaviour>();
+            vehicle_camera_profile = vehicle_camera_postprocess_behavior.profile;
+            isPostProfile = true;
+        }
         groundCheck_hits = new RaycastHit[255];
         ground_check_ray = new Ray[255];
+
     }
 
     private void FixedUpdate()
@@ -157,13 +167,13 @@ public class JunkinVehcileMovement : MonoBehaviour
         //Middle Ray
         ground_check_ray[0] = new Ray(vehicle_transform.position, -vehicle_transform.up);
         //Forward Right
-        ground_check_ray[1] = new Ray(vehicle_transform.position + vehicle_transform.forward * length_float + vehicle_transform.right * width_float, - vehicle_transform.up);
+        ground_check_ray[1] = new Ray(vehicle_transform.position + vehicle_transform.forward * length_float + vehicle_transform.right * width_float, -vehicle_transform.up);
         //Back Left
-        ground_check_ray[2] = new Ray(vehicle_transform.position - vehicle_transform.forward * length_float - vehicle_transform.right * width_float, - vehicle_transform.up);
+        ground_check_ray[2] = new Ray(vehicle_transform.position - vehicle_transform.forward * length_float - vehicle_transform.right * width_float, -vehicle_transform.up);
         //Forward Left
-        ground_check_ray[3] = new Ray(vehicle_transform.position + vehicle_transform.forward * length_float - vehicle_transform.right * width_float, - vehicle_transform.up);
+        ground_check_ray[3] = new Ray(vehicle_transform.position + vehicle_transform.forward * length_float - vehicle_transform.right * width_float, -vehicle_transform.up);
         //Back Right
-        ground_check_ray[4] = new Ray(vehicle_transform.position - vehicle_transform.forward * length_float + vehicle_transform.right * width_float, - vehicle_transform.up);
+        ground_check_ray[4] = new Ray(vehicle_transform.position - vehicle_transform.forward * length_float + vehicle_transform.right * width_float, -vehicle_transform.up);
 
         is_grounded = VehicleGroundRaycast(ground_check_ray, height_float);
     }
@@ -186,7 +196,7 @@ public class JunkinVehcileMovement : MonoBehaviour
                 {
                     Debug.Log("hit: " + groundCheck_hits[0].transform.name);
                 }
-                    return true;
+                return true;
             }
         }
         return false;
@@ -235,14 +245,8 @@ public class JunkinVehcileMovement : MonoBehaviour
     #region Steer Rotation Methods
     private void VehicleSteerRotation()
     {
-        Quaternion look_direction = Quaternion.LookRotation(new Vector3(vehicle_heading_transform.forward.x, 0, vehicle_heading_transform.forward.z));
-        Quaternion new_direction = vehicle_heading_transform.rotation * Quaternion.Euler(0, steer_magnitude_float * STEER * Time.fixedDeltaTime, 0);
-
         //This is the direction vector we use to accelerate
         vehicle_heading_transform.rotation *= Quaternion.Euler(0, steer_magnitude_float * STEER * Time.fixedDeltaTime, 0);
-
-        //This is the junkin vehicle model vector we use to rotate
-        vehicle_model_transform.rotation *= Quaternion.Euler(0, steer_magnitude_float * STEER * Time.fixedDeltaTime * drift_correction_float, 0);
 
         //Initiate Drift Mode
         if (Input.GetKey(KeyCode.Space) || Input.GetAxis("RightTrigger") > 0)
@@ -265,7 +269,6 @@ public class JunkinVehcileMovement : MonoBehaviour
                 drift_correction_float = min_drift_correction_float;
             }
 
-
             //Decrease Vehicle Steering Ability as drifting progresses
             if (max_steer_modified > max_steer_float / DRIFT_STEER_DAMPEN)
             {
@@ -281,22 +284,43 @@ public class JunkinVehcileMovement : MonoBehaviour
             {
                 if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
                 {
-                    max_accel_modified += drift_accel_multiplier_float;
+                    //Just make this a factor of 10 in inspector
+                    max_accel_modified += drift_accel_multiplier_float * 10;
+                    if (max_accel_modified > max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                    }
                 }
                 else
                 {
-                    max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
-                }
-            }
-            else
-            {
-                if(max_accel_modified > max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
-                {
-                    max_accel_modified -= DRAG * Time.fixedDeltaTime;
+                    //Just make this a factor of 10 in inspector
+                    max_accel_modified -= drift_accel_multiplier_float * 10;
                     if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
                     {
                         max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
                     }
+                }
+            }
+            else
+            {
+                if (max_accel_modified > max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                {
+                    //Drag should be new var 'Friction'
+                    max_accel_modified -= ROTATIONAL_DRAG * Time.fixedDeltaTime;
+                    if (max_accel_modified < max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                    }
+                }
+                else
+                {
+                    //Drag should be new var 'Friction'
+                    max_accel_modified += ROTATIONAL_DRAG * Time.fixedDeltaTime;
+                    if (max_accel_modified > max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - max_steer_float * STEER_DECELERATION + Mathf.Abs(steer_magnitude_float) * DRIFT_ACCELERATION + nitros_speed_float;
+                    }
+
                 }
             }
 
@@ -327,11 +351,14 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
 
             //Rotate: Note there should be DECREMENTAL deviation between the Heading rotation V.S. Model rotation
-            if (drift_correction_float < max_drift_correction_float)
+            if (Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation) > 0)
+            {
                 vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, drift_correction_float);
+            }
             else
                 vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, 1f);
         }
+
     }
     #endregion
 
@@ -405,7 +432,10 @@ public class JunkinVehcileMovement : MonoBehaviour
             {
                 is_nitrosboost = true;
                 nitros_speed_float = max_nitros_speed_float;
-                if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
+                if (isPostProfile)
+                {
+                    if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = true;
+                }
             }
 
             if (is_Cinematic_View)
@@ -423,7 +453,10 @@ public class JunkinVehcileMovement : MonoBehaviour
         {
             if (is_nitrosboost)
             {
-                if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = false;
+                if (isPostProfile)
+                {
+                    if (is_MotionBlur) vehicle_camera_postprocess_behavior.profile.motionBlur.enabled = false;
+                }
             }
 
             if (is_Cinematic_View)
@@ -444,30 +477,50 @@ public class JunkinVehcileMovement : MonoBehaviour
     {
         if (!is_drift)
         {
+
             if (is_nitrosboost)
             {
                 max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
             }
             else
             {
-                if(max_accel_modified > max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
+                if (max_accel_modified > max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
                 {
                     max_accel_modified -= DRAG * Time.fixedDeltaTime;
-                    if(max_accel_modified< max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
+                    if (max_accel_modified < max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
                     {
                         max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
                     }
                 }
                 else
                 {
-                    max_accel_modified = max_accel_float;
+                    max_accel_modified += DRAG * Time.fixedDeltaTime;
+                    if (max_accel_modified > max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float)
+                    {
+                        max_accel_modified = max_accel_float - Mathf.Abs(steer_magnitude_float) * STEER_DECELERATION + nitros_speed_float;
+                    }
                 }
             }
         }
 
         if (Input.GetKey(KeyCode.W) || Input.GetButton("A"))
-        {        
-            accel_magnitude_float = accel_magnitude_float < max_accel_modified ? accel_magnitude_float += (ACCEL + nitros_speed_float) * Time.fixedDeltaTime : max_accel_modified;
+        {
+            if (accel_magnitude_float < max_accel_modified)
+            {
+                accel_magnitude_float += (ACCEL + nitros_speed_float) * Time.fixedDeltaTime;
+                if (accel_magnitude_float > max_accel_modified)
+                {
+                    accel_magnitude_float = max_accel_modified;
+                }
+            }
+            else
+            {
+                accel_magnitude_float -= (ACCEL + nitros_speed_float) * Time.fixedDeltaTime;
+                if (accel_magnitude_float < max_accel_modified)
+                {
+                    accel_magnitude_float = max_accel_modified;
+                }
+            }
         }
         else
         {
@@ -506,10 +559,18 @@ public class JunkinVehcileMovement : MonoBehaviour
         }
         else
         {
+            if (Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation) > 0)
+            {
+                vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, drift_correction_float);
+            }
+            else
+                vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, 1f);
+
+
             //Return Vehicle Rotation to initial state
             if (steer_magnitude_float > 0)
             {
-                if(steer_magnitude_float - STEER * Time.fixedDeltaTime < 0)
+                if (steer_magnitude_float - STEER * Time.fixedDeltaTime < 0)
                 {
                     steer_magnitude_float = 0;
                 }
@@ -544,9 +605,9 @@ public class JunkinVehcileMovement : MonoBehaviour
             }
             else if (wheel_steer_float < 0)
             {
-                if (wheel_steer_float+ STEER * Time.fixedDeltaTime > 0)
+                if (wheel_steer_float + STEER * Time.fixedDeltaTime > 0)
                 {
-                    wheel_steer_float= 0;
+                    wheel_steer_float = 0;
                 }
                 else
                 {
@@ -559,13 +620,13 @@ public class JunkinVehcileMovement : MonoBehaviour
     #endregion
 
     #region Applying Default Preset Values for custom vehicles
-    [ContextMenu("Default Junkin-Drivers Vehicle")]
-    public void DefaultJunkinDriverPreset()
+    [ContextMenu("Default Vehicle Values")]
+    public void DefaultVehicleValuesPreset()
     {
         width_float = 4f;
         length_float = 6f;
         height_float = 2f;
-        is_4wd = false;
+        is_4wd = true;
 
 
         is_grounded = true;
@@ -608,7 +669,8 @@ public class JunkinVehcileMovement : MonoBehaviour
 
         ACCEL = 50f;
         DRAG = 25f;
-        GRAVITY = 100f;
+        ROTATIONAL_DRAG = 25f;
+        GRAVITY = 1000f;
         STEER = 15f;
         STEER_DECELERATION = 10f;
         DRIFT_ACCELERATION = 40f;
