@@ -131,6 +131,9 @@ MonoBehaviour:
   nitros_meter_float: 99999
   nitros_speed_float: 0
   tiltLerp_float: 0
+  vehicle_air_height: 0
+  vehicle_air_control: 0
+  vehicle_speed_turn_ratio: 0
   is_drift: 0
   is_nitrosboost: 0
   max_gravity_float: 250
@@ -145,6 +148,7 @@ MonoBehaviour:
   max_nitros_meter_float: 100
   max_nitros_speed_float: 100
   nitros_depletion_rate: 2.5
+  min_air_control: 0.1
   rayCast_layerMask:
     serializedVersion: 2
     m_Bits: 21
@@ -158,6 +162,11 @@ MonoBehaviour:
   DRIFT_ACCELERATION: 40
   DRIFT_STEER_DAMPEN: 10
   input_type_enum: 0
+  PlayerNum: 1
+  input_steering: LeftJoyStickX_P
+  input_accelerate: RightTrigger_P
+  input_drift: B_P
+  input_nitros: A_P
 --- !u!54 &443800255
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -293,8 +302,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4253303299460216}
   - component: {fileID: 20147978221968630}
-  - component: {fileID: 81484298580492884}
   - component: {fileID: 347682263}
+  - component: {fileID: 3732027716624681406}
   m_Layer: 8
   m_Name: Camera_Main
   m_TagString: CarMain
@@ -359,14 +368,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &81484298580492884
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1553501011955064}
-  m_Enabled: 1
 --- !u!114 &347682263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,6 +381,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 2b179e0f0cb0fd248ace0a2cf07dff81, type: 2}
+--- !u!81 &3732027716624681406
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553501011955064}
+  m_Enabled: 1
 --- !u!1 &1580527243465524
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,23 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ModuloKart.CustomVehiclePhysics;
 
-public class SimpleUI : MonoBehaviour
+namespace ModuloKart.HUD
 {
-    public VehicleBehavior vehicleBehhavior;
-    public Text Value_Velocity;
-    public Text Value_Nitros;
 
-    // Start is called before the first frame update
-    void Start()
+    public class SimpleUI : MonoBehaviour
     {
-        vehicleBehhavior = GameObject.FindObjectOfType<VehicleBehavior>();
+        [HideInInspector] public VehicleBehavior vehicleBehavior;
+        public Text Value_Velocity;
+        public Text Value_Nitros;
+
+        private void Start()
+        {
+            vehicleBehavior = GameObject.FindObjectOfType<VehicleBehavior>();
+        }
+
+        private void Update()
+        {
+            if (vehicleBehavior == null) return;
+            if (Value_Velocity == null) return;
+            if (Value_Nitros == null) return;
+
+            Value_Velocity.text = (Mathf.FloorToInt(vehicleBehavior.accel_magnitude_float)).ToString();
+            Value_Nitros.text = (Mathf.FloorToInt(vehicleBehavior.nitros_meter_float)).ToString();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        Value_Velocity.text = (Mathf.FloorToInt(vehicleBehhavior.accel_magnitude_float)).ToString();
-        Value_Nitros.text = (Mathf.FloorToInt(vehicleBehhavior.nitros_meter_float)).ToString();
-    }
 }
