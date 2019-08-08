@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isCodeDebug: 0
-  isEditorGUI: 1
+  isEditorGUI: 0
   keepTabsOpen: 1
   showRunTimeVariablesOnly: 0
   vehicle_transform: {fileID: 4941976934902108}
@@ -162,7 +162,9 @@ MonoBehaviour:
   DRIFT_ACCELERATION: 40
   DRIFT_STEER_DAMPEN: 10
   input_type_enum: 0
-  PlayerNum: 1
+  PlayerID: 1
+  JoyStick: -1
+  isControllerInitialized: 0
   input_steering: LeftJoyStickX_P
   input_accelerate: RightTrigger_P
   input_drift: B_P
@@ -303,7 +305,6 @@ GameObject:
   - component: {fileID: 4253303299460216}
   - component: {fileID: 20147978221968630}
   - component: {fileID: 347682263}
-  - component: {fileID: 3732027716624681406}
   m_Layer: 8
   m_Name: Camera_Main
   m_TagString: CarMain
@@ -346,7 +347,7 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
+    width: 0.5
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
@@ -381,14 +382,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 2b179e0f0cb0fd248ace0a2cf07dff81, type: 2}
---- !u!81 &3732027716624681406
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1553501011955064}
-  m_Enabled: 1
 --- !u!1 &1580527243465524
 GameObject:
   m_ObjectHideFlags: 0

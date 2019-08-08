@@ -226,7 +226,8 @@ namespace ModuloKart.CustomInspector
             if (showInputType || vehicleBehavior.keepTabsOpen)
             {
                 vehicleBehavior.input_type_enum = (InputType)EditorGUILayout.EnumFlagsField("Input Type", vehicleBehavior.input_type_enum);
-                vehicleBehavior.PlayerNum = EditorGUILayout.IntSlider("Player Number", vehicleBehavior.PlayerNum, 1, 4);
+                vehicleBehavior.PlayerID = EditorGUILayout.IntSlider("Player ID", vehicleBehavior.PlayerID, 1, 4);
+                vehicleBehavior.JoyStick = EditorGUILayout.IntSlider("Joystick Number", vehicleBehavior.JoyStick, -1, 20);
                 vehicleBehavior.input_steering = EditorGUILayout.TextField("Input Steering", vehicleBehavior.input_steering);
                 vehicleBehavior.input_accelerate = EditorGUILayout.TextField("Input Accelerate", vehicleBehavior.input_accelerate);
                 vehicleBehavior.input_drift = EditorGUILayout.TextField("Input Drift", vehicleBehavior.input_drift);

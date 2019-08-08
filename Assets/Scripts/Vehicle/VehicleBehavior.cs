@@ -125,7 +125,9 @@ namespace ModuloKart.CustomVehiclePhysics
         #region InputSelection
         [Header("InputType")]
         public InputType input_type_enum = InputType.KeyboardAndMouse;
-        public int PlayerNum;
+        [Range(1, 4f)] public int PlayerID;
+        [Range(-1, 20f)] public int JoyStick;
+        public bool isControllerInitialized;
         public string input_steering = "LeftJoyStickX_P";
         public string input_accelerate = "RightTrigger_P";
         public string input_drift = "B_P";
@@ -153,17 +155,17 @@ namespace ModuloKart.CustomVehiclePhysics
             groundCheck_hits = new RaycastHit[255];
             ground_check_ray = new Ray[255];
 
+        input_steering = "Horizontal";
+        input_accelerate = "Vertical";
+        input_drift = "Jump";
+        input_nitros = "NitroKey";
 
-            input_steering = "LeftJoyStickX_P" + PlayerNum;
-            input_accelerate = "RightTrigger_P" + PlayerNum;
-            input_drift = "B_P" + PlayerNum;
-            input_nitros = "A_P" + PlayerNum;
-            //Debug.Log("Player: " + PlayerNum + ", Buttons assigneed: " + input_nitros + ", breaking.. " + input_drift);
+    }
 
-        }
-
-        private void FixedUpdate()
+    private void FixedUpdate()
         {
+            //InitializePlayerJoystick();
+            if (!isControllerInitialized) return;
             VehicleGroundCheck();
             VehicleMovement();
         }
