@@ -9,13 +9,22 @@ namespace ModuloKart.HUD
 
     public class SimpleUI : MonoBehaviour
     {
+        VehicleBehavior[] vehicleBehaviors;
         [HideInInspector] public VehicleBehavior vehicleBehavior;
+        public int PlayerID;
         public Text Value_Velocity;
         public Text Value_Nitros;
 
         private void Start()
         {
-            vehicleBehavior = GameObject.FindObjectOfType<VehicleBehavior>();
+            vehicleBehaviors = GameObject.FindObjectsOfType<VehicleBehavior>();
+            foreach (VehicleBehavior v in vehicleBehaviors)
+            {
+                if (v.PlayerID == PlayerID)
+                {
+                    vehicleBehavior = v;
+                }
+            }
         }
 
         private void Update()
