@@ -113,6 +113,11 @@
     <Compile Include="Assets\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\Scripts\ControllerHandler\ControllerHandler.cs" />
+    <Compile Include="Assets\Scripts\GameManager\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Menu_Main\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\Menu_Main\MenuSelectionOption.cs" />
+    <Compile Include="Assets\Scripts\Menu_PlayerSelection\PlayerSelectionManager.cs" />
+    <Compile Include="Assets\Scripts\Menu_PlayerSelection\PlayerSelectionOption.cs" />
     <Compile Include="Assets\Scripts\Misc\SimpleUI.cs" />
     <Compile Include="Assets\Scripts\Vehicle\VehicleBehavior.cs" />
     <None Include="Assets\PostProcessing\Resources\Shaders\DepthOfField.shader" />

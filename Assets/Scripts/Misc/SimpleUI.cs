@@ -14,6 +14,8 @@ namespace ModuloKart.HUD
         public int PlayerID;
         public Text Value_Velocity;
         public Text Value_Nitros;
+        public GameObject BeginBackgroundObject;
+        public GameObject ViewPortRect;
 
         private void Start()
         {
@@ -35,6 +37,14 @@ namespace ModuloKart.HUD
 
             Value_Velocity.text = (Mathf.FloorToInt(vehicleBehavior.accel_magnitude_float)).ToString();
             Value_Nitros.text = (Mathf.FloorToInt(vehicleBehavior.nitros_meter_float)).ToString();
+
+            if (BeginBackgroundObject.activeSelf)
+            {
+                if (vehicleBehavior.JoyStick != -1)
+                {
+                    BeginBackgroundObject.SetActive(false);
+                }
+            }
         }
     }
 
