@@ -365,9 +365,29 @@ namespace ModuloKart.CustomVehiclePhysics
                 }
 
                 //Rotate: Note there should be INCREMENTAL deviation between the Heading rotation V.S. Model rotation
-                if (Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation) > 25)
+                //vehicle_heading_transform.rotation = Quaternion.Euler(-1 * vehicle_heading_transform.rotation.eulerAngles);
+                //float tempAngle = Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation);
+                //if (tempAngle > 25)
+                tempX = vehicle_heading_transform.rotation.x;
+                tempY = vehicle_heading_transform.rotation.y;
+                tempZ = vehicle_heading_transform.rotation.z;
+                tempW = vehicle_heading_transform.rotation.w;
+                tempY *= -1;
+                Quaternion tempQ = vehicle_heading_transform.rotation;
+                if (Input.GetAxis(input_steering) < 0)
+                    tempQ = vehicle_heading_transform.rotation * Quaternion.Euler(0, -45, 0);
+                else if (Input.GetAxis(input_steering) > 0)
+                    tempQ = vehicle_heading_transform.rotation * Quaternion.Euler(0, 45, 0);
+
+                //tempQ = vehicle_heading_transform.rotation;
+
+                vehicle_model_transform.rotation = tempQ;
+                float tempAngle = Quaternion.Angle(tempQ, vehicle_model_transform.rotation);
+
+                if (Quaternion.Angle(vehicle_model_transform.rotation, tempQ) > 25)
                 {
-                    vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, drift_correction_float);
+                    Debug.Log("tempANgle: " + tempAngle);
+                    vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, tempQ, drift_correction_float);
                 }
             }
             //Not Drifting
@@ -592,6 +612,9 @@ namespace ModuloKart.CustomVehiclePhysics
             }
         }
 
+
+        float tempX, tempY, tempZ, tempW;
+        Vector3 targetRot;
         private void VehicleSteerInput()
         {
             if (!is_drift)
@@ -611,12 +634,27 @@ namespace ModuloKart.CustomVehiclePhysics
             }
             else
             {
-                if (Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation) > 0)
+                if (Quaternion.Angle(vehicle_model_transform.rotation, vehicle_heading_transform.rotation) < 0)
                 {
+                    //tempX = vehicle_heading_transform.rotation.x;
+                    //tempY = vehicle_heading_transform.rotation.y;
+                    //tempZ = vehicle_heading_transform.rotation.z;
+                    //tempW = vehicle_heading_transform.rotation.w;
+                    //tempY *= -1;
+                    //vehicle_heading_transform.rotation = Quaternion.Euler(-1 * vehicle_heading_transform.rotation.eulerAngles);
                     vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, drift_correction_float);
                 }
                 else
+                {
+                    //tempX = vehicle_heading_transform.rotation.x;
+                    //tempY = vehicle_heading_transform.rotation.y;
+                    //tempZ = vehicle_heading_transform.rotation.z;
+                    //tempW = vehicle_heading_transform.rotation.w;
+                    //tempY *= -1;
+                    //vehicle_heading_transform.rotation = Quaternion.Euler(tempX, tempY, tempZ);
+                    //vehicle_heading_transform.rotation = Quaternion.Euler(-1 * vehicle_heading_transform.rotation.eulerAngles);
                     vehicle_model_transform.rotation = Quaternion.Lerp(vehicle_model_transform.rotation, vehicle_heading_transform.rotation, 1f);
+                }
 
 
                 //Return Vehicle Rotation to initial state

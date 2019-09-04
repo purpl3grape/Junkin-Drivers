@@ -35505,6 +35505,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerHUDs
       objectReference: {fileID: 0}
+    - target: {fileID: 6196138884016353753, guid: 66efadd9ed136dd418ea823fae13778d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6196138884016353754, guid: 66efadd9ed136dd418ea823fae13778d,
         type: 3}
       propertyPath: m_LocalPosition.x
